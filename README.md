@@ -2,24 +2,33 @@
 
 The following scripts illustrate how to fit some of the models presented in [Vazquez et al., Genetics (2016)]().
 
-#### (1) Installing required libraries
+#### (1) Installing required library
 
-
-The code below illustrates how to install BGLR and BGData from GitHub. BGLR can also be installed from CRAN using `install.packages()`.
+The code below illustrates how to install BGLR package from CRAN using `install.packages()`.
 
 ```R
- install.packages(pkg='devtools',repos='https://cran.r-project.org/')    #1# install devtools
- library(devtools)                                                       #2# load the library
- install_git('https://github.com/gdlc/BGLR/')                            #3# install BGLR from GitHub
- install_git('https://github.com/quantgen/BGData/')                      #4# install BGLR from GitHub
-```   
+ install.packages(pkg='BGLR')    #1# install BGLR
+ ```   
+
+Data. The code assumes that the user has saved in the file OMIC_DATA.rda the objects that contain the phenotypic, covariates and omic information
+•	XF: an incidence matrix with clinical covariates.
+•	Xge: an incidence matrix with gene expression. 
+•	Xmt: an incidence matrix with methylation values at various sites
+•	y: a vector with responses, it may be continuous (time to event type) or binary (0/1), we are assuming a binary response.
+It is assumed that the omics data was QC edited removing outliers, constant variables, or columns with too many missing values (e.g. more than 10% missing values). It is also assumed that there are no missing values in the predictors, thus, if there is they should be imputed. 
 
 #### (2) Loading data and computing similarity matrices.
+
+ TCGA sata is small enough to be loaded and manipulated in RAM. Here we 
  
  The function `getG()`, from the [BGData](https://github.com/quantgen/BGData) R-package computes a similarity matrix of the form G=XX'. The function offers several alternatives relative to centering and scaling. The function also allows multi-core computing. For further details follow the link provided above.
  
- **Data**. The code assumes that the user has saved in the file `OMIC_DATA.RDasta` the objects that contain the phenotypic, covariates and omic information
-  * XF: 
+ ```R 
+ #Building Gene Expression Similarity Matrix
+#Center the columns of Xge
+ Xge<- scale(Xge, scale=FALSE, center=TRUE)
+ Gge<-tcrossprod(Xge);tmp<-mean(diag(Gge)); Gge<-Gge/tmp
+```
  
 ```R
  library(BGData)
@@ -49,7 +58,13 @@ The following code illustrates how to use BGLR to fit a fixed effects model. The
   head(fm$probs)    # estimated probabilities for the 0/1 outcomes.
 ```
 
+#### (1) Installing required libraries
+
+
+The code below illustrates how to install BGLR and BGData from GitHub. BGLR can also be installed from CRAN using `install.packages()`.
 
 ```R
-rnorm(100)
-```
+ install.packages(pkg='devtools',repos='https://cran.r-project.org/')    #1# install devtools
+ library(devtools)                                                       #2# load the library
+ install_git('https://github.com/quantgen/BGData/')                      #4# install BGLR from GitHub
+```   
