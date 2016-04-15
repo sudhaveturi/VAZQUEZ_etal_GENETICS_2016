@@ -48,3 +48,8 @@ The following code illustrates how to use BGLR to fit a fixed effects model. The
   fm$ETA$COV$SD.b   # posteriro SD of fixed effects
   head(fm$probs)    # estimated probabilities for the 0/1 outcomes.
 ```
+
+
+```R
+rnorm(100)
+```
