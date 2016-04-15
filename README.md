@@ -4,7 +4,6 @@ The following scripts illustrate how to fit some of the models presented in [Vaz
 
 #### (1) Installing required libraries
 
-[my link](https://github.com/anainesvs/VAZQUEZ_GENETICS_2016/blob/master/dataEdits.md)
 
 The code below illustrates how to install BGLR and BGData from GitHub. BGLR can also be installed from CRAN using `install.packages()`.
 
