@@ -3,7 +3,7 @@
 The following scripts illustrate how to fit some of the models presented in [Vazquez et al., Genetics (2016)]().
 
 #### (1) Installing required libraries
-
+#hola
 The code below illustrates how to install BGLR and BGData from GitHub. BGLR can also be installed from CRAN using `install.packages()`.
 
 ```R
