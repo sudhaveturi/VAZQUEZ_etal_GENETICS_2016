@@ -29,7 +29,6 @@ The code below illustrates how to install BGLR and BGData from GitHub. BGLR can 
  Gmt<-getG(Xmt,scaleCol=T,scaleG=T) # Similarity matrix for methylation. 
  XF<- scale(XF, scale=FALSE, center=TRUE) # centering and scaling the incidence matrix for fixed effects.
 ```
-#HOLA
 
 #### (3)  Fitting a survival model for Fixed effects using BGLR
 
