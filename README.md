@@ -19,8 +19,8 @@ The code below illustrates how to install and load the necessary package from CR
    * `y`: a vector with the response, in this case a 0/1 where 0 denotes alive.
 The code below assumes that all the predictors were edited by removing outliers and predictors that did not vary in the sample, transformed if needed, and missing values were imputed.
 
-#### (2) Computing similarity matrices
- Some of the models fitted in the study use similarity matrices of the form G=XX' computed from omics. The following code illustrates how to compute this matrix for gene expression. A similar code could be use to compute a G-matrix for methylation or other omics (see (5)).
+#### (3) Computing similarity matrices
+ Some of the models fitted in the study use similarity matrices of the form G=XX' computed from omics. The following code illustrates how to compute this matrix for gene expression. A similar code could be use to compute a G-matrix for methylation or other omics (see (6)).
  
  ```R 
   load('OMIC_DATA.rda')
@@ -32,7 +32,7 @@ The code below assumes that all the predictors were edited by removing outliers 
 **NOTE**: for larger data sets it may be more convinient to use the `geG()` function of the [BGData](https://github.com/quantgen/BGData) R-package. This function allows computing G without loading all the data in RAM and offers methods for multi-core computing. 
 
 
-#### (3)  Fitting a binary regression for (the "fixed effects" of) Clinical Coavariates using BGLR (COV)
+#### (4)  Fitting a binary regression for (the "fixed effects" of) Clinical Coavariates using BGLR (COV)
 The following code illustrates how to use BGLR to fit a fixed effects model. The matrix XF is an incidence matrix for clinical covariates. There is no column for intercept in XF because BGLR adds the intercept automatically. The response variable `y` is assumed to be coded with two lables (e.g., 0/1), the argument `response_type` is used to indicate to BGLR that the response is ordinal (the binary case is a special case with only two levels). Predictors are given to BGLR in the form a two-level list. The argument `save_at` can be used to provide a path and a pre-fix to be added to the files saved by BGLR. For further details see [Pérez-Rodriguez and de los Campos, Genetics, 2014](http://www.genetics.org/content/genetics/198/2/483.full.pdf). The code also shows how to retrieve estimates of effects and of success probabilities. In the examples below we fit the model using the default number of iterations (1,500) and burn-in (500). In practice longer chains are needed, the user can increase the numbrer of iterations or the burn-in using the arguments `nIter` and `burnIn` of `BGLR`.
 ```R
 # Inputs
@@ -46,7 +46,7 @@ The following code illustrates how to use BGLR to fit a fixed effects model. The
  head(fm$probs)    # estimated probabilities for the 0/1 outcomes.
 ```
 
-#### (4)  Fitting a binary model for fixed effects and whole genome gene expression (GE) using BGLR (COV+GE)
+#### (5)  Fitting a binary model for fixed effects and whole genome gene expression (GE) using BGLR (COV+GE)
 The following code illustrates how to use BGLR to fit a mixed effects model that accomodates both clinical covariates and whole-genome-gene expression. 
 ```R
 # Setting the linear predictor
@@ -62,7 +62,7 @@ The following code illustrates how to use BGLR to fit a mixed effects model that
 ```
 **NOTE**: to fit a similar model for COV+METH one just needs to change the inputs in the defintiion of the linear predictor by providing Gmt instead of Gge.
 
-#### (5)  Fitting a binary model for fixed effects covariates and 2 omics (COV+GE+METH)
+#### (6)  Fitting a binary model for fixed effects covariates and 2 omics (COV+GE+METH)
 The following code shows how to extend the the model `COV+GE` with addition of methylation data.
 ```R
 #Computing a similarity matrix for methylation data
@@ -77,7 +77,7 @@ fm.COV.GE.MT<- BGLR(y=y, ETA=ETA.COV.GE.MT,
                  response_type='ordinal',saveAt='cov_ge_mt_')
 ```
 
-#### (6)  Fitting a binary model for fixed effects covariates and 2 omics and their interactions (COV+GE+METH+GExMETH)
+#### (7)  Fitting a binary model for fixed effects covariates and 2 omics and their interactions (COV+GE+METH+GExMETH)
 The following code shows how to extend the the model `COV+GE+METH` with addition of interactions between gene expression and methylation profiles.
 ```R
  G.mg=Gmt*Gge
@@ -91,7 +91,7 @@ fm.COV.GE.MT.GExMT<- BGLR(y=y, ETA=ETA.COV.GE.MT.GExMT,
                  response_type='ordinal',saveAt='cov_ge_mt_gexmt')
 ```
 
-#### (6) Validation
+#### (8) Validation
 The following illustrates how to select a validation set using the model `COV` as example.
 **NOTE**: if sample size is small and uneven in the number of 1 and 0 (e.g., <300) it will be wise to randomize 1s and 0s to be part of the testing sets, and repeate the validation multiple times. In Vazquez et al., 2016 (Genetics) we implement 200 cross-validations.
 ```R
