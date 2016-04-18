@@ -8,7 +8,7 @@ The code below illustrates how to install and load the necessary package from CR
    library(BGLR); 
  ```   
 
-#### (2) Loading data.
+#### (2) Loading data
 
 **Data**. The code assumes that the user has saved in the file `OMIC_DATA.rda` the objects that contain the phenotypic information, clinical covariates, and omic data. The code assumes that the file `OMIC_DATA.rda` contain the following objects:
 
@@ -23,7 +23,7 @@ The code below illustrates how to install and load the necessary package from CR
 The code below assumes that all the predictors were edited by removing outliers and predictors that did not vary in the sample and transformed and imputed (i.e., no NAs in predictors) if needed.
 
  
-#### (2) Computing similarity matrices.
+#### (2) Computing similarity matrices
  Some of the models fitted use a similarity matrix of the form G=XX' computed from omics. The following code illustrates how to compute these matrices.
  
  ```R 
