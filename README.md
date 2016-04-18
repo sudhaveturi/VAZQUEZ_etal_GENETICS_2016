@@ -25,10 +25,15 @@ The code below assumes that all the predictors were edited by removing outliers 
  ```R 
   load('OMIC_DATA.rda')
 
-  #Building Gene Expression Similarity Matrix
+  #Computing a similarity matrix for gene-expression data
    Xge<- scale(Xge, scale=FALSE, center=TRUE) #centering and scaling
    Gge<-tcrossprod(Xge)                       #computing crossproductcts
    Gge<-Gge/mean(diag(Gge)                    #scales to an average diagonal value of 1.
+   
+  #Computing a similarity matrix for methylation data
+   Xge<- scale(Xmt, scale=FALSE, center=TRUE) #centering and scaling
+   Gmt<-tcrossprod(Xmt)                       #computing crossproductcts
+   Gmt<-Gge/mean(diag(Gmt)                    #scales to an average diagonal value of 1.
 ```
  
 **NOTE**: for larger data sets it may be more convinient to use the `geG()` function of the [BGData](https://github.com/quantgen/BGData) R-package. This function allows computing G without loading all the data in RAM and offers methods for multi-core computing. 
@@ -52,7 +57,7 @@ The following code illustrates how to use BGLR to fit a fixed effects model. The
  
 ```
 
-#### (5)  Fitting a binary model for fixed effects and whole genome gene expression (GE) using BGLR (COV+GE)
+#### (4)  Fitting a binary model for fixed effects and whole genome gene expression (GE) using BGLR (COV+GE)
 
 The following code illustrates how to use BGLR to fit a mixed effects model that accomodates both clinical covariates and whole-genome-gene expression. 
 
@@ -72,48 +77,73 @@ The following code illustrates how to use BGLR to fit a mixed effects model that
   
 ```
 
-**NOTE**: to fit a similar model for COV+METH one just needs to change the inputs in the defintiion of the linear predictor by providing Gmeth instead of Gge.
+**NOTE**: to fit a similar model for COV+METH one just needs to change the inputs in the defintiion of the linear predictor by providing Gmt instead of Gge.
 
-#### (6)  Fitting a binary model for fixed effects covariates and 2 whole genome omics.
-The following code shows how to extend the second model (2) to incorporation of two omics. Because the model is more complex that the covariates-only model we use longer MCMC chains.
+#### (5)  Fitting a binary model for fixed effects covariates and 2 omics (COV+GE+METH)
+The following code shows how to extend the the model `COV+GE` with addition of methylation data.
 
 ```R
-#Building Methylation Similarity Matrix
-#Center the columns of Xmt
-Xmt<- scale(Xmt, scale=FALSE, center=TRUE)
-Gmt<-tcrossprod(Xmt);tmp<-mean(diag(Gmt)); Gmt<-Gmt/tmp
-# Setting up parameters to adjust the COV model + 2 omics
-ETA.COV.GE.MT<-list( list(X=XF, model='FIXED'),
-           list(K=Gge, model='RKHS'),
-           list(K=Gmt, model='RKHS'))
+
+ETA.COV.GE.MT<-list( COV=list(X=XF, model='FIXED'),
+                     GE=list(K=Gge, model='RKHS'),
+                     METH=list(K=Gmt, model='RKHS'))
 
 # Fitting models 
 # (3) 
 fm.COV.GE.MT<- BGLR(y=y, ETA=ETA.COV.GE.MT, 
-                 response_type='ordinal', nIter=55000,burnIn=5000)
+                 response_type='ordinal', ,nIter=55000,burnIn=5000,saveAt='cov_ge_mt_')
 ```
 
-#### (7) Below we demostrate how to test the model (1) in a randomly selected testing set.
+#### (6)  Fitting a binary model for fixed effects covariates and 2 omics and their interactions (COV+GE+METH+GExMETH)
+The following code shows how to extend the the model `COV+GE+METH` with addition of interactions between gene expression and methylation profiles.
+
+```R
+ K=Gmt*Gge
+ K=K/mean(diag(K))
+ ETA.COV.GE.MT.GExMT<-list( COV=list(X=XF, model='FIXED'),
+                     GE=list(K=Gge, model='RKHS'),
+                     METH=list(K=Gmt, model='RKHS'),
+                     GExMETH=list(K=K, model='RKHS'))
+
+# Fitting models 
+# (3) 
+fm.COV.GE.MT.GExMT<- BGLR(y=y, ETA=ETA.COV.GE.MT.GExMT, 
+                 response_type='ordinal', ,nIter=55000,burnIn=5000,saveAt='cov_ge_mt_gexmt')
+```
+
+#### (6) 10-fold Cross-validation
+
+The following illustrates how to implement a 10-fold cross-validation using models `COV` and `COV+GE` as examples
+
 ```R
 #Installing and loading library pROC to compute Area Under the ROC Curve.
-install.packages(pkg='pROC')    # install pROC
-library(pROC);
+ install.packages(pkg='pROC')    # install pROC
+ library(pROC);
  
-#  Randomly select a 20% of the data to be the a separated testing set:
-n <- length(y)
-tst<- runif(n) <0.2
-yNA = y
-yNA[tst] <-NA
+#  Random assigment of observations to folds
+ n <- length(y)
+ folds=rep(1:10,each=ceiling(n/10))[1:n]
+ folds=folds[order(runif(n))]
+ 
+ YHatCV<-matrix(nrow=n,ncol=2);colnames(YHatCV)<-c('COV','COV+GE')
+ 
+ for(i in 1:10){
+   tst=which(folds==i)
+   yNA = y
+   yNA[tst] <-NA
+ 
+   # Covariates
+     fm=BGLR(y=yNA,ETA=ETA.COV,nIter=55000,burnIn=5000)
+     YHatCV[tst,1]=fm$probs[tst,2]
+     rm(fm); unlink('*.dat')     
 
-# Fit the model only in the training set
-fm.COVtr<- BGLR(y=yNA, ETA=ETA.COV, response_type='ordinal')
-# Find probability of survival for the testing set
-pred <-fm.COVtr$probs[tst,2]
-
-# Estimate AUC in training and testing sets
-AUC_train<-auc(y[-tst],fm.COV2$yHat[-tst])
-AUC_test<-auc(y[tst], pred)
-
-#For the first individual, area under the standard normal curve (CDF) of estimated y from full model:
-pnorm(fm.COV$yHat[1])
+   
+   # Covariates +GE
+      fm=BGLR(y=yNA,ETA=ETA.COV.GE,nIter=55000,burnIn=5000)
+      YHatCV[tst,2]=fm.COVtr$probs[tst,2]
+      rm(fm); unlink('*.dat')
+ }
+ 
+ auc(y,YHat[,1]) # AUC for Covariates only
+ auc(y,YHat[,2]) # AUC for Covariates + GE
 ```
