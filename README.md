@@ -1,5 +1,5 @@
 ## Integrating multiple Omics for Prediction of BC Survival
-The following scripts illustrate how to fit models presented in case study I and IV published in *Vazquez et al., Genetics, 2016*.
+The following scripts illustrate how to fit some of the models presented in *Vazquez et al., Genetics, 2016*.
 
 #### (1) Installing BGLR
 The code below illustrates how to install and load the necessary package from CRAN using `install.packages()`.
@@ -10,7 +10,8 @@ The code below illustrates how to install and load the necessary package from CR
 
 #### (2) Loading data.
 
-**Data**. The code assumes that the user has saved in the file `OMIC_DATA.rda` the objects that contain the phenotypic information, covariates, and omic information. The code assumes that the file `OMIC_DATA.rda` contain the following objects:
+**Data**. The code assumes that the user has saved in the file `OMIC_DATA.rda` the objects that contain the phenotypic information, clinical covariates, and omic information. The code assumes that the file `OMIC_DATA.rda` contain the following objects:
+
  •	XF: an incidence matrix with clinical covariates.
  •	Xge: an incidence matrix with gene expression. 
  •	Xmt: an incidence matrix with methylation values at various sites
