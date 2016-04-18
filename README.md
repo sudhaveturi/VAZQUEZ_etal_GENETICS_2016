@@ -41,7 +41,7 @@ The code below assumes that all the predictors were edited by removing outliers 
 
 #### (3)  Fitting a binary regression for (the "fixed effects" of) Clinical Coavariates using BGLR (COV)
 
-The following code illustrates how to use BGLR to fit a fixed effects model. The matrix XF is an incidence matrix for clinical covariates. There is no column for intercept in XF because BGLR adds the intercept automatically. The response variable `y` is assumed to be coded with two lables (e.g., 0/1), the argument `response_type` is used to indicate to BGLR that the response is ordinal (the binary case is a special case with only two levels). Predictors are given to BGLR in the form a two-level list. The argument `save_at` can be used to provide a path and a pre-fix to be added to the files saved by BGLR. For further details see [Pérez-Rodriguez and de los Campos, Genetics, 2014](http://www.genetics.org/content/genetics/198/2/483.full.pdf). The code also shows how to retrieve estimates of effects and of success probabilities. In thr example we use 12000 iterations with 2000 iterations discarded for burn-in. 
+The following code illustrates how to use BGLR to fit a fixed effects model. The matrix XF is an incidence matrix for clinical covariates. There is no column for intercept in XF because BGLR adds the intercept automatically. The response variable `y` is assumed to be coded with two lables (e.g., 0/1), the argument `response_type` is used to indicate to BGLR that the response is ordinal (the binary case is a special case with only two levels). Predictors are given to BGLR in the form a two-level list. The argument `save_at` can be used to provide a path and a pre-fix to be added to the files saved by BGLR. For further details see [Pérez-Rodriguez and de los Campos, Genetics, 2014](http://www.genetics.org/content/genetics/198/2/483.full.pdf). The code also shows how to retrieve estimates of effects and of success probabilities. In the examples below we fit the model using the default number of iterations (1,500) and burn-in (500). In practice longer chains are needed, the user can increase the numbrer of iterations or the burn-in using the arguments `nIter` and `burnIn` of `BGLR`.
 
 ```R
 # Inputs
@@ -66,7 +66,7 @@ The following code illustrates how to use BGLR to fit a mixed effects model that
   ETA.COV.GE<-list( COV=list(X=XF, model='FIXED'), GE=list(K=Gge, model='RKHS'))
 # Fitting the model
   #(2)
-  fm.COV.GE<- BGLR(y=y, ETA=ETA.COV.GE, response_type='ordinal',nIter=55000,burnIn=5000,saveAt='cov_ge_')
+  fm.COV.GE<- BGLR(y=y, ETA=ETA.COV.GE, response_type='ordinal',saveAt='cov_ge_')
   
 #  Retrieving predictors
   fm.COV.GE$mu            # intercept
@@ -91,7 +91,7 @@ ETA.COV.GE.MT<-list( COV=list(X=XF, model='FIXED'),
 # Fitting models 
 # (3) 
 fm.COV.GE.MT<- BGLR(y=y, ETA=ETA.COV.GE.MT, 
-                 response_type='ordinal', ,nIter=55000,burnIn=5000,saveAt='cov_ge_mt_')
+                 response_type='ordinal',saveAt='cov_ge_mt_')
 ```
 
 #### (6)  Fitting a binary model for fixed effects covariates and 2 omics and their interactions (COV+GE+METH+GExMETH)
@@ -108,7 +108,7 @@ The following code shows how to extend the the model `COV+GE+METH` with addition
 # Fitting models 
 # (3) 
 fm.COV.GE.MT.GExMT<- BGLR(y=y, ETA=ETA.COV.GE.MT.GExMT, 
-                 response_type='ordinal', ,nIter=55000,burnIn=5000,saveAt='cov_ge_mt_gexmt')
+                 response_type='ordinal',saveAt='cov_ge_mt_gexmt')
 ```
 
 #### (6) 10-fold Cross-validation
@@ -141,7 +141,7 @@ The following illustrates how to implement a 10-fold cross-validation using mode
 
    
    # Covariates +GE
-      fm=BGLR(y=yNA,ETA=ETA.COV.GE,nIter=55000,burnIn=5000)
+      fm=BGLR(y=yNA,ETA=ETA.COV.GE)
       YHatCV[tst,2]=fm.COVtr$probs[tst,2]
       rm(fm); unlink('*.dat')
  }
