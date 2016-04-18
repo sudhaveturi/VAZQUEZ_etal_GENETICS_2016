@@ -38,7 +38,7 @@ The code below assumes that all the predictors were edited by removing outliers 
 NOTE: for larger data sets it may be more convinient to use the `geG()` function of the [BGData](https://github.com/quantgen/BGData) R-package. This function allows computing G without loading all the data in RAM and offers methods for multi-core computing. 
 
 
-#### (3)  Fitting a binary regression for (the "fixed effects" of)Clinical Coavariates using BGLR
+#### (3)  Fitting a binary regression for (the "fixed effects" of) Clinical Coavariates using BGLR
 
 The following code illustrates how to use BGLR to fit a fixed effects model. The matrix XF is an incidence matrix for clinical covariates. There is no column for intercept in XF because BGLR adds the intercept automatically. The response variable `y` is assumed to be coded with two lables (e.g., 0/1), the argument `response_type` is used to indicate to BGLR that the response is ordinal (the binary case is a special case with only two levels). Predictors are given to BGLR in the form a two-level list. The argument `save_at` can be used to provide a path and a pre-fix to be added to the files saved by BGLR. For further details see [Pérez-Rodriguez and de los Campos, Genetics, 2014](http://www.genetics.org/content/genetics/198/2/483.full.pdf). The code also shows how to retrieve estimates of effects and of success probabilities. In thr example we use 12000 iterations with 2000 iterations discarded for burn-in. 
 
