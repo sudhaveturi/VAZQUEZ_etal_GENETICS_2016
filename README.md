@@ -92,7 +92,7 @@ fm.COV.GE.MT.GExMT<- BGLR(y=y, ETA=ETA.COV.GE.MT.GExMT,
 ```
 
 #### (6) Validation
-The following illustrates how to select a validation set using the model `COV` and `COV+GE` as examples.
+The following illustrates how to select a validation set using the model `COV` as example.
 **NOTE**: if sample size is small and uneven in the number of 1 and 0 (e.g., <300) it will be wise to randomize 1s and 0s to be part of the testing sets, and repeate the validation multiple times. In Vazquez et al., 2016 (Genetics) we implement 200 cross-validations.
 ```R
 #Installing and loading library pROC to compute Area Under the ROC Curve.
