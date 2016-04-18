@@ -10,7 +10,7 @@ The code below illustrates how to install and load the necessary package from CR
 
 #### (2) Loading data.
 
-**Data**. The code assumes that the user has saved in the file `OMIC_DATA.rda` the objects that contain the phenotypic information, clinical covariates, and omic information. The code assumes that the file `OMIC_DATA.rda` contain the following objects:
+**Data**. The code assumes that the user has saved in the file `OMIC_DATA.rda` the objects that contain the phenotypic information, clinical covariates, and omic data. The code assumes that the file `OMIC_DATA.rda` contain the following objects:
 
  •	`XF`: an incidence matrix with clinical covariates.
  
