@@ -20,7 +20,7 @@ The code below assumes that all the predictors were edited by removing outliers 
 
  
 #### (2) Computing similarity matrices
- Some of the models fitted in the study use similarity matrices of the form G=XX' computed from omics. The following code illustrates how to compute these matrices.
+ Some of the models fitted in the study use similarity matrices of the form G=XX' computed from omics. The following code illustrates how to compute this matrix for gene expression. A similar code could be use to compute a G-matrix for methylation or other omics.
  
  ```R 
   load('OMIC_DATA.rda')
@@ -31,10 +31,10 @@ The code below assumes that all the predictors were edited by removing outliers 
    Gge<-Gge/mean(diag(Gge)                    #scales to an average diagonal value of 1.
 ```
  
-NOTE: for larger data sets it may be more convinient to use the `geG()` function of the [BGData](https://github.com/quantgen/BGData) R-package. This function allows computing G without loading all the data in RAM and offers methods for multi-core computing. 
+**NOTE**: for larger data sets it may be more convinient to use the `geG()` function of the [BGData](https://github.com/quantgen/BGData) R-package. This function allows computing G without loading all the data in RAM and offers methods for multi-core computing. 
 
 
-#### (3)  Fitting a binary regression for (the "fixed effects" of) Clinical Coavariates using BGLR
+#### (3)  Fitting a binary regression for (the "fixed effects" of) Clinical Coavariates using BGLR (COV)
 
 The following code illustrates how to use BGLR to fit a fixed effects model. The matrix XF is an incidence matrix for clinical covariates. There is no column for intercept in XF because BGLR adds the intercept automatically. The response variable `y` is assumed to be coded with two lables (e.g., 0/1), the argument `response_type` is used to indicate to BGLR that the response is ordinal (the binary case is a special case with only two levels). Predictors are given to BGLR in the form a two-level list. The argument `save_at` can be used to provide a path and a pre-fix to be added to the files saved by BGLR. For further details see [Pérez-Rodriguez and de los Campos, Genetics, 2014](http://www.genetics.org/content/genetics/198/2/483.full.pdf). The code also shows how to retrieve estimates of effects and of success probabilities. In thr example we use 12000 iterations with 2000 iterations discarded for burn-in. 
 
@@ -52,17 +52,27 @@ The following code illustrates how to use BGLR to fit a fixed effects model. The
  
 ```
 
-#### (5)  Fitting a binary model for fixed effects and whole genome gene expression (GE) using BGLR
+#### (5)  Fitting a binary model for fixed effects and whole genome gene expression (GE) using BGLR (COV+GE)
 
-The following code illustrates how to use BGLR to fit a mixed effects model that accomodates both clinical covariates and whole-genome-gene expression.
+The following code illustrates how to use BGLR to fit a mixed effects model that accomodates both clinical covariates and whole-genome-gene expression. 
 
 ```R
-# Setting up parameters to adjust COV + one omic model
-  ETA.COV.GE<-list( list(X=XF, model='FIXED'), list(K=Gge, model='RKHS'))
+# Setting the linear predictor
+  ETA.COV.GE<-list( COV=list(X=XF, model='FIXED'), GE=list(K=Gge, model='RKHS'))
 # Fitting the model
   #(2)
-  fm.COV.GE<- BGLR(y=y, ETA=ETA.COV.GE, response_type='ordinal',nIter=)
+  fm.COV.GE<- BGLR(y=y, ETA=ETA.COV.GE, response_type='ordinal',nIter=55000,burnIn=5000,saveAt='cov_ge_')
+  
+#  Retrieving predictors
+  fm.COV.GE$mu            # intercept
+  fm.COV.GE$ETA$COV$b     # effects of covariates
+  fm$COV.GE$ETA$GE$varU   # variance associated to GE SD.varU gives posterior SD
+  fm.COV.GE$ETA$GE$u      # random effects associated to gene expression
+  plot(scan('cov_ge_ETA_GE_varU.dat'),type='o',col=4) # trace plot of variance of GE.
+  
 ```
+
+**NOTE**: to fit a similar model for COV+METH one just needs to change the inputs in the defintiion of the linear predictor by providing Gmeth instead of Gge.
 
 #### (6)  Fitting a binary model for fixed effects covariates and 2 whole genome omics.
 The following code shows how to extend the second model (2) to incorporation of two omics. Because the model is more complex that the covariates-only model we use longer MCMC chains.
