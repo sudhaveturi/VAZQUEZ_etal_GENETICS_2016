@@ -7,7 +7,7 @@ The following scripts illustrate how to fit some of the models presented in *Vaz
 #### (1) Installing BGLR
 The code below illustrates how to install and load the necessary package from CRAN using `install.packages()`.
 ```R
-   install.packages(pkg='BGLR')    #1# install BGLR
+   install.packages(pkg='BGLR')    # install BGLR
    library(BGLR); 
  ```   
 
