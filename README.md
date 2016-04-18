@@ -1,5 +1,8 @@
 ## Integrating multiple Omics for Prediction of BC Survival
-The following scripts illustrate how to fit some of the models presented in *Vazquez et al., Genetics, 2016*.
+
+The following scripts illustrate how to fit some of the models presented in *Vazquez et al., Genetics, 2016*, the scripts are also provided at: [https://github.com/anainesvs/VAZQUEZ_etal_GENETICS_2016](https://github.com/anainesvs/VAZQUEZ_etal_GENETICS_2016), please refer to that webpage for updates.
+
+**Contact**:avazquez@msu.edu
 
 #### (1) Installing BGLR
 The code below illustrates how to install and load the necessary package from CRAN using `install.packages()`.
