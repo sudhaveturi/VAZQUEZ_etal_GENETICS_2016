@@ -113,7 +113,9 @@ fm.COV.GE.MT.GExMT<- BGLR(y=y, ETA=ETA.COV.GE.MT.GExMT,
 
 #### (6) 10-fold Cross-validation
 
-The following illustrates how to implement a 10-fold cross-validation using models `COV` and `COV+GE` as examples
+The following illustrates how to implement a 10-fold cross-validation using models `COV` and `COV+GE` as examples.
+
+**NOTE**: if sample size is small (e.g., <300) it will be wise to replicate this CV multiple times.
 
 ```R
 #Installing and loading library pROC to compute Area Under the ROC Curve.
