@@ -13,11 +13,8 @@ The code below illustrates how to install and load the necessary package from CR
 **Data**. The code assumes that the user has saved in the file `OMIC_DATA.rda` the objects that contain the phenotypic information, clinical covariates, and omic data. The code assumes that the file `OMIC_DATA.rda` contain the following objects:
 
  •	`XF`: an incidence matrix for clinical covariates.
- 
  •	`Xge`: an incidence matrix for gene expression. 
- 
  •	`Xmt`: an incidence matrix for methylation values at various sites.
- 
  •	`y`: a vector with the response, in this case a 0/1 where 0 denotes alive.
 
 The code below assumes that all the predictors were edited by removing outliers and predictors that did not vary in the sample and transformed and imputed (i.e., no NAs in predictors) if needed.
