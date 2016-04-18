@@ -93,7 +93,6 @@ fm.COV.GE.MT.GExMT<- BGLR(y=y, ETA=ETA.COV.GE.MT.GExMT,
 
 #### (8) Validation
 The following illustrates how to select a validation set using the model `COV` as example.
-**NOTE**: if sample size is small (like TCGA data) and uneven in the number of 1s and 0s it will be wise to randomize 1s and 0s to be part of the testing sets, and repeate the validation multiple times. In Vazquez et al., 2016 (Genetics) we implement 200 cross-validations.
 ```R
 #Installing and loading library pROC to compute Area Under the ROC Curve.
 install.packages(pkg='pROC')    # install pROC
@@ -112,3 +111,4 @@ AUC_test<-auc(y[tst], pred)
 #For the first individual, area under the standard normal curve (CDF) of estimated y from full model:
 pnorm(fm.COV$yHat[1])
 ```
+**NOTE**: if sample size is small (like TCGA data) and uneven in the number of 1s and 0s it will be wise to randomize 1s and 0s to be part of the testing sets, and repeate the validation multiple times. In Vazquez et al., 2016 (Genetics) we implement 200 cross-validations.
