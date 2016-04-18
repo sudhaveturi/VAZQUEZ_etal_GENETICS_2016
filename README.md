@@ -20,7 +20,7 @@ The code below assumes that all the predictors were edited by removing outliers 
 
  
 #### (2) Computing similarity matrices
- Some of the models fitted use a similarity matrix of the form G=XX' computed from omics. The following code illustrates how to compute these matrices.
+ Some of the models fitted in the study use similarity matrices of the form G=XX' computed from omics. The following code illustrates how to compute these matrices.
  
  ```R 
   load('OMIC_DATA.rda')
