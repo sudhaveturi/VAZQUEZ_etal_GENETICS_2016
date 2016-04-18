@@ -26,14 +26,14 @@ The code below assumes that all the predictors were edited by removing outliers 
   load('OMIC_DATA.rda')
 
   #Computing a similarity matrix for gene-expression data
-   Xge<- scale(Xge, scale=FALSE, center=TRUE) #centering and scaling
+   Xge<- scale(Xge, scale=true, center=TRUE) #centering and scaling
    Gge<-tcrossprod(Xge)                       #computing crossproductcts
    Gge<-Gge/mean(diag(Gge)                    #scales to an average diagonal value of 1.
    
   #Computing a similarity matrix for methylation data
-   Xge<- scale(Xmt, scale=FALSE, center=TRUE) #centering and scaling
+   Xmt<- scale(Xmt, scale=TRUE, center=TRUE)  #centering and scaling
    Gmt<-tcrossprod(Xmt)                       #computing crossproductcts
-   Gmt<-Gge/mean(diag(Gmt)                    #scales to an average diagonal value of 1.
+   Gmt<-Gmt/mean(diag(Gmt)                    #scales to an average diagonal value of 1.
 ```
  
 **NOTE**: for larger data sets it may be more convinient to use the `geG()` function of the [BGData](https://github.com/quantgen/BGData) R-package. This function allows computing G without loading all the data in RAM and offers methods for multi-core computing. 
