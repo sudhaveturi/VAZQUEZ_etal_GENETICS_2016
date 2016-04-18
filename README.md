@@ -23,20 +23,14 @@ The code below assumes that all the predictors were edited by removing outliers 
 
  
 #### (2) Computing similarity matrices
- Some of the models fitted in the study use similarity matrices of the form G=XX' computed from omics. The following code illustrates how to compute this matrix for gene expression. A similar code could be use to compute a G-matrix for methylation or other omics.
+ Some of the models fitted in the study use similarity matrices of the form G=XX' computed from omics. The following code illustrates how to compute this matrix for gene expression. A similar code could be use to compute a G-matrix for methylation or other omics (see (5)).
  
  ```R 
   load('OMIC_DATA.rda')
-
   #Computing a similarity matrix for gene-expression data
    Xge<- scale(Xge, scale=true, center=TRUE) #centering and scaling
    Gge<-tcrossprod(Xge)                       #computing crossproductcts
    Gge<-Gge/mean(diag(Gge)                    #scales to an average diagonal value of 1.
-   
-  #Computing a similarity matrix for methylation data
-   Xmt<- scale(Xmt, scale=TRUE, center=TRUE)  #centering and scaling
-   Gmt<-tcrossprod(Xmt)                       #computing crossproductcts
-   Gmt<-Gmt/mean(diag(Gmt)                    #scales to an average diagonal value of 1.
 ```
  
 **NOTE**: for larger data sets it may be more convinient to use the `geG()` function of the [BGData](https://github.com/quantgen/BGData) R-package. This function allows computing G without loading all the data in RAM and offers methods for multi-core computing. 
@@ -51,13 +45,11 @@ The following code illustrates how to use BGLR to fit a fixed effects model. The
  XF<- scale(XF, scale=FALSE, center=TRUE) # centering and scaling the incidence matrix for fixed effects.
  ETA.COV<-list( COV=list(X=XF, model='FIXED') )
 # Fitting the model
- #(1)  
  fm=BGLR(y=y, ETA=ETA.COV, saveAt='cov_', response_type='ordinal')
 # Retrieving estimates
  fm$ETA$COV$b      # posterior means of fixed effects
  fm$ETA$COV$SD.b   # posteriro SD of fixed effects
  head(fm$probs)    # estimated probabilities for the 0/1 outcomes.
- 
 ```
 
 #### (4)  Fitting a binary model for fixed effects and whole genome gene expression (GE) using BGLR (COV+GE)
@@ -68,28 +60,28 @@ The following code illustrates how to use BGLR to fit a mixed effects model that
 # Setting the linear predictor
   ETA.COV.GE<-list( COV=list(X=XF, model='FIXED'), GE=list(K=Gge, model='RKHS'))
 # Fitting the model
-  #(2)
   fm.COV.GE<- BGLR(y=y, ETA=ETA.COV.GE, response_type='ordinal',saveAt='cov_ge_')
-  
 #  Retrieving predictors
   fm.COV.GE$mu            # intercept
   fm.COV.GE$ETA$COV$b     # effects of covariates
   fm$COV.GE$ETA$GE$varU   # variance associated to GE SD.varU gives posterior SD
   fm.COV.GE$ETA$GE$u      # random effects associated to gene expression
   plot(scan('cov_ge_ETA_GE_varU.dat'),type='o',col=4) # trace plot of variance of GE.
-  
 ```
-
 **NOTE**: to fit a similar model for COV+METH one just needs to change the inputs in the defintiion of the linear predictor by providing Gmt instead of Gge.
+
 #### (5)  Fitting a binary model for fixed effects covariates and 2 omics (COV+GE+METH)
 The following code shows how to extend the the model `COV+GE` with addition of methylation data.
 ```R
+  #Computing a similarity matrix for methylation data
+   Xmt<- scale(Xmt, scale=TRUE, center=TRUE)  #centering and scaling
+   Gmt<-tcrossprod(Xmt)                       #computing crossproductcts
+   Gmt<-Gmt/mean(diag(Gmt)                    #scales to an average diagonal value of 1.
+   
 ETA.COV.GE.MT<-list( COV=list(X=XF, model='FIXED'),
                      GE=list(K=Gge, model='RKHS'),
                      METH=list(K=Gmt, model='RKHS'))
-
 # Fitting models 
-# (3) 
 fm.COV.GE.MT<- BGLR(y=y, ETA=ETA.COV.GE.MT, 
                  response_type='ordinal',saveAt='cov_ge_mt_')
 ```
