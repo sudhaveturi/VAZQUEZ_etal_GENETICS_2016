@@ -93,22 +93,20 @@ fm.COV.GE.MT.GExMT<- BGLR(y=y, ETA=ETA.COV.GE.MT.GExMT,
 
 #### (8) Validation
 The following illustrates how to select a validation set using the model `COV` as example.
-**NOTE**: if sample size is small and uneven in the number of 1 and 0 (e.g., <300) it will be wise to randomize 1s and 0s to be part of the testing sets, and repeate the validation multiple times. In Vazquez et al., 2016 (Genetics) we implement 200 cross-validations.
+**NOTE**: if sample size is small (like TCGA data) and uneven in the number of 1s and 0s it will be wise to randomize 1s and 0s to be part of the testing sets, and repeate the validation multiple times. In Vazquez et al., 2016 (Genetics) we implement 200 cross-validations.
 ```R
 #Installing and loading library pROC to compute Area Under the ROC Curve.
- install.packages(pkg='pROC')    # install pROC
- library(pROC);
- n <- length(y)
-# Randomly select a 20% of the data to be the testing set 
+install.packages(pkg='pROC')    # install pROC
+library(pROC);
+n <- length(y)
+  # Randomly select a 20% of the data to be the testing set 
 tst<- runif(n) <0.2
-yNA = y
-yNA[tst] <-NA
-# Fit the model only in the training set
+yNA = y; yNA[tst] <-NA
+  # Fit the model only in the training set
 fm.COVtr<- BGLR(y=yNA, ETA=ETA.COV, response_type='ordinal')
-# Find probability of survival for the testing set
+  # Find probability of survival for the testing set
 pred <-fm.COV2$probs[tst,2]
-# Estimate AUC
-AUC_full<-auc(y,fm.COV$yHat)
+  # Estimate AUC
 AUC_train<-auc(y[-tst],fm.COV2$yHat[-tst])
 AUC_test<-auc(y[tst], pred)
 #For the first individual, area under the standard normal curve (CDF) of estimated y from full model:
