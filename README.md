@@ -81,12 +81,9 @@ The following code illustrates how to use BGLR to fit a mixed effects model that
 ```
 
 **NOTE**: to fit a similar model for COV+METH one just needs to change the inputs in the defintiion of the linear predictor by providing Gmt instead of Gge.
-
 #### (5)  Fitting a binary model for fixed effects covariates and 2 omics (COV+GE+METH)
 The following code shows how to extend the the model `COV+GE` with addition of methylation data.
-
 ```R
-
 ETA.COV.GE.MT<-list( COV=list(X=XF, model='FIXED'),
                      GE=list(K=Gge, model='RKHS'),
                      METH=list(K=Gmt, model='RKHS'))
@@ -99,22 +96,20 @@ fm.COV.GE.MT<- BGLR(y=y, ETA=ETA.COV.GE.MT,
 
 #### (6)  Fitting a binary model for fixed effects covariates and 2 omics and their interactions (COV+GE+METH+GExMETH)
 The following code shows how to extend the the model `COV+GE+METH` with addition of interactions between gene expression and methylation profiles.
-
 ```R
- K=Gmt*Gge
- K=K/mean(diag(K))
+ G.mg=Gmt*Gge
+ G.mg=G.mg/mean(diag(G.mg))
  ETA.COV.GE.MT.GExMT<-list( COV=list(X=XF, model='FIXED'),
                      GE=list(K=Gge, model='RKHS'),
                      METH=list(K=Gmt, model='RKHS'),
-                     GExMETH=list(K=K, model='RKHS'))
-
+                     GExMETH=list(K=G.mg, model='RKHS'))
 # Fitting models 
 # (3) 
 fm.COV.GE.MT.GExMT<- BGLR(y=y, ETA=ETA.COV.GE.MT.GExMT, 
                  response_type='ordinal',saveAt='cov_ge_mt_gexmt')
 ```
 
-#### (6) 10-fold Cross-validation
+#### (6) Validation
 
 The following illustrates how to implement a 10-fold cross-validation using models `COV` and `COV+GE` as examples.
 
