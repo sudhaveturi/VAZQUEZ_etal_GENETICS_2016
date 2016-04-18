@@ -2,12 +2,10 @@
 The following scripts illustrate how to fit models presented in case study I and IV published in [Vazquez et al., Genetics (2016)]().
 
 #### (1) Installing required library
-The code below illustrates how to install and load the necessary packages from CRAN using `install.packages()`.
+The code below illustrates how to install and load the necessary package from CRAN using `install.packages()`.
 ```R
  install.packages(pkg='BGLR')    #1# install BGLR
- install.packages(pkg='pROC')    #2# install pROC
  library(BGLR); 
- library(pROC);
  ```   
 
 #### (2) Loading data.
@@ -78,4 +76,29 @@ ETA.COV.GE.MT<-list( list(X=XF, model='FIXED'),
 # (3) 
 fm.COV.GE.MT<- BGLR(y=y, ETA=ETA.COV.GE.MT, 
                  response_type='ordinal')
+```
+
+#### (7) Below we demostrate how to test the model (1) in a randomly selected testing set.
+```R
+#Installing and loading library pROC to compute Area Under the ROC Curve.
+ install.packages(pkg='pROC')    # install pROC
+ library(pROC);
+ 
+#  Randomly select a 20% of the data to be the a separated testing set:
+n <- length(y)
+tst<- runif(n) <0.2
+yNA = y
+yNA[tst] <-NA
+
+# Fit the model only in the training set
+fm.COVtr<- BGLR(y=yNA, ETA=ETA.COV, response_type='ordinal')
+# Find probability of survival for the testing set
+pred <-fm.COVtr$probs[tst,2]
+
+# Estimate AUC in training and testing sets
+AUC_train<-auc(y[-tst],fm.COV2$yHat[-tst])
+AUC_test<-auc(y[tst], pred)
+
+#For the first individual, area under the standard normal curve (CDF) of estimated y from full model:
+pnorm(fm.COV$yHat[1])
 ```
